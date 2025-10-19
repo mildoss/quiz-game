@@ -1,10 +1,14 @@
-import {RegisterForm} from "@/components/RegisterForm";
+"use client"
+
+import {useRegisterMutation} from "@/services/authApi";
+import {AuthForm} from "@/components/AuthForm";
 
 export default function RegisterPage() {
   return (
-    <div className="h-full gap-2 p-4 flex flex-col justify-center items-center">
+    <>
       <h1 className="text-4xl text-center font-bold mb-2">Register</h1>
-      <RegisterForm/>
-    </div>
+      <AuthForm mode="register" mutation={useRegisterMutation}/>
+    </>
+
   )
 }

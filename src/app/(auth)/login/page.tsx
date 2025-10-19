@@ -1,7 +1,14 @@
+"use client"
+
+import {useLoginMutation} from "@/services/authApi";
+import {AuthForm} from "@/components/AuthForm";
+
 export default function LoginPage() {
   return (
-    <div className="container min-h-screen flex justify-center items-center mx-auto">
-      <h1 className="text-7xl text-center">Login</h1>
-    </div>
+    <>
+      <h1 className="text-4xl text-center font-bold mb-2">Login</h1>
+      <AuthForm mode="login" mutation={useLoginMutation}/>
+    </>
+
   )
 }

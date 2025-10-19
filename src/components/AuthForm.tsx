@@ -1,6 +1,6 @@
 "use client"
 
-import {useRegisterMutation} from "@/services/authApi";
+import {useLoginMutation, useRegisterMutation} from "@/services/authApi";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "@/store/store";
 import {setCredentials} from "@/store/authSlice";
@@ -9,20 +9,25 @@ import {FormInput} from "@/components/ui/FormInput";
 import {getErrorMessage} from "@/utils/errorUtils";
 import {FormButton} from "@/components/ui/FormButton";
 
-export const RegisterForm = () => {
-  const [register, {isLoading, error: apiError}] = useRegisterMutation();
+interface AuthFormProps {
+  mode: "login" | "register";
+  mutation: typeof useLoginMutation | typeof useRegisterMutation;
+}
+
+export const AuthForm = ({mode, mutation}: AuthFormProps) => {
+  const [mutate, {isLoading, error: apiError}] = mutation();
   const dispatch = useDispatch<AppDispatch>();
 
   const {values, error, setError, handleChange, handleSubmit} = useAuthForm({
     onSubmit: async (username, password) => {
       try {
-        const result = await register({username, password}).unwrap();
+        const result = await mutate({username, password}).unwrap();
         dispatch(setCredentials({token: result.token}));
       } catch (err) {
         setError(getErrorMessage(err));
       }
     },
-    requireConfirmPassword: true
+    requireConfirmPassword: mode === 'register'
   });
 
   const combinedError = error || (apiError && getErrorMessage(apiError));
@@ -40,10 +45,12 @@ export const RegisterForm = () => {
                  placeholder="Enter username"/>
       <FormInput label="Password" value={values.password} onChange={handleChange("password")} disabled={isLoading}
                  placeholder="Enter password" type="password"/>
-      <FormInput label="Confirm password" value={values.confirmPassword} onChange={handleChange("confirmPassword")}
-                 disabled={isLoading} placeholder="Confirm password" type="password"/>
-
-      <FormButton isLoading={isLoading}>Register</FormButton>
+      {mode === 'register' && (
+        <FormInput label="Confirm password" value={values.confirmPassword} onChange={handleChange("confirmPassword")}
+                   disabled={isLoading} placeholder="Confirm password" type="password"/>
+      )
+      }
+      <FormButton isLoading={isLoading}>{mode === 'register' ? 'Register' : 'Login'}</FormButton>
     </form>
   )
 }
