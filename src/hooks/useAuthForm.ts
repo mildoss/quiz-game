@@ -43,6 +43,12 @@ export const useAuthForm = ({onSubmit, requireConfirmPassword = false}: UseAuthF
     }
 
     await onSubmit(values.username, values.password);
+    setValues({
+      username: "",
+      password: "",
+      confirmPassword: ""
+    });
+    setError(null);
   }
 
   return {values, error, setError, handleChange, handleSubmit};

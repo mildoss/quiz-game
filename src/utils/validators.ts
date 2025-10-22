@@ -1,8 +1,12 @@
 export const validateUsername = (username: string): string | null => {
   const trimmed = username.trim();
   if (!trimmed) return "Username is required";
-  if (trimmed.length < 2) return "Username must be at least 2 characters";
+  if (trimmed.length < 3) return "Username must be at least 3 characters";
   if (trimmed.length > 20) return "Username must be at most 20 characters";
+  const validUsernameRegex = /^[a-zA-Z0-9_-]+$/;
+  if (!validUsernameRegex.test(trimmed)) {
+    return "Username must not contain special characters";
+  }
   return null;
 }
 

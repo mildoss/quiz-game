@@ -8,6 +8,7 @@ import {useAuthForm} from "@/hooks/useAuthForm";
 import {FormInput} from "@/components/ui/FormInput";
 import {getErrorMessage} from "@/utils/errorUtils";
 import {FormButton} from "@/components/ui/FormButton";
+import Link from "next/link";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -51,6 +52,22 @@ export const AuthForm = ({mode, mutation}: AuthFormProps) => {
       )
       }
       <FormButton isLoading={isLoading}>{mode === 'register' ? 'Register' : 'Login'}</FormButton>
-    </form>
+      <p className="text-sm text-gray-300 text-center">
+        {mode === "register" ? (
+          <>
+            Already have an account?{" "}
+            <Link href="/login" className="text-amber-400 hover:underline">
+              Log in
+            </Link>
+          </>
+        ) : (
+          <>
+            Don’t have an account yet?{" "}
+            <Link href="/register" className="text-amber-400 hover:underline">
+              Register
+            </Link>
+          </>
+        )}
+      </p></form>
   )
 }
