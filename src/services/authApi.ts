@@ -1,22 +1,20 @@
-import { baseApi } from './api';
+import {baseApi} from './api';
 import type {
+  AuthRequest,
   AuthResponse,
-  LoginRequest,
-  RegisterRequest
 } from '@/types/auth'
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<AuthResponse,LoginRequest>({
+    login: builder.mutation<AuthResponse, AuthRequest>({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
         body: credentials,
       }),
-      invalidatesTags: ['Auth'],
     }),
 
-    register: builder.mutation<AuthResponse,RegisterRequest>({
+    register: builder.mutation<AuthResponse, AuthRequest>({
       query: (userData) => ({
         url: '/auth/register',
         method: 'POST',
@@ -24,10 +22,10 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    checkAuth: builder.query<AuthResponse,void>({
+    checkAuth: builder.query<AuthResponse, void>({
       query: () => ({
         url: '/auth/refresh',
-        method: 'GET',
+        method: 'POST',
       }),
       providesTags: ['Auth'],
     }),
@@ -37,9 +35,8 @@ export const authApi = baseApi.injectEndpoints({
         url: '/auth/logout',
         method: 'POST',
       }),
-      invalidatesTags: ['Auth'],
     }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useCheckAuthQuery } = authApi;
+export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useCheckAuthQuery} = authApi;
