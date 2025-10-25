@@ -53,9 +53,9 @@ export const BurgerMenu = () => {
         }
         `}
       >
-        <li><Link href="/" onClick={() => setOpen(false)}>Home</Link></li>
+        <li><Link href="/" onClick={() => setOpen(false)}>Game</Link></li>
         <li><Link href="/leaderboard" onClick={() => setOpen(false)}>Leaderboard</Link></li>
-        {!isAuth && <li><Link href="/stats" onClick={() => setOpen(false)}>Stats</Link></li>}
+        {isAuth && <li><Link href="/stats" onClick={() => setOpen(false)}>Stats</Link></li>}
         <li><AuthButton onAction={() => setOpen(false)}/></li>
       </ul>
     </div>

@@ -23,7 +23,7 @@ export const Menu = () => {
               path === '/' ? 'border-b-2 border-amber-500 text-amber-400' : ''
             }`}
           >
-            Home
+            Game
           </Link>
         </li>
         <li>

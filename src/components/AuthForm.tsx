@@ -9,6 +9,7 @@ import {FormInput} from "@/components/ui/FormInput";
 import {getErrorMessage} from "@/utils/errorUtils";
 import {FormButton} from "@/components/ui/FormButton";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -18,12 +19,15 @@ interface AuthFormProps {
 export const AuthForm = ({mode, mutation}: AuthFormProps) => {
   const [mutate, {isLoading, error: apiError}] = mutation();
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const {values, error, setError, handleChange, handleSubmit} = useAuthForm({
     onSubmit: async (username, password) => {
       try {
         const result = await mutate({username, password}).unwrap();
-        dispatch(setCredentials({token: result.token}));
+        dispatch(setCredentials({token: result.token, id: result.id, username: result.username}));
+        router.push('/');
+
       } catch (err) {
         setError(getErrorMessage(err));
       }
