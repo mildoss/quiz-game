@@ -4,6 +4,7 @@ import React from "react";
 import StoreProvider from "@/providers/StoreProvider";
 import {Inter} from "next/font/google"
 import {Menu} from "@/components/Menu";
+import {AuthProvider} from "@/providers/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,13 +24,16 @@ export default function RootLayout({
         className="min-h-screen flex flex-col"
         suppressHydrationWarning
       >
-      <header className="p-4 bg-gray-800">
-        <Menu/>
-      </header>
       <StoreProvider>
+        <AuthProvider>
+        <header className="sticky top-0 left-0 w-full z-10 p-2 bg-gray-800">
+          <Menu/>
+        </header>
+
         <main className="flex-1 container mx-auto">
           {children}
         </main>
+        </AuthProvider>
       </StoreProvider>
       </body>
     </html>
