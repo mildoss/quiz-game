@@ -1,4 +1,5 @@
 import {NextResponse} from 'next/server';
+import {cookies} from "next/headers";
 
 const BACKEND_URL = process.env.BACKEND_API_URL;
 const REFRESH_COOKIE_NAME = 'refresh-token';
@@ -52,3 +53,32 @@ export async function proxyBackend(endpoint: string, fetchOptions: Partial<Reque
     );
   }
 }
+
+// export async function serverAuthCheck() {
+//   const cookieStore = await cookies();
+//   const refreshToken = cookieStore.get('refresh-token');
+//
+//   if (!refreshToken) {
+//     throw new Error('No refresh token found (serverAuthCheck)');
+//   }
+//
+//   const fetchOptions: Partial<RequestInit> = {
+//     method: 'POST',
+//     headers: {
+//       'Cookie': `refresh-token=${refreshToken.value}`,
+//     },
+//     cache: 'no-store'
+//   };
+//
+//   try {
+//     const apiRes = await fetch(`${BACKEND_URL}/auth/refresh`, fetchOptions);
+//
+//     if (!apiRes.ok) {
+//       throw new Error(`Auth failed on Java backend: ${apiRes.status}`);
+//     }
+//     return await apiRes.json();
+//
+//   } catch (error) {
+//     throw new Error('Server error or backend is unreachable');
+//   }
+// }

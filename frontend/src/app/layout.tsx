@@ -29,7 +29,6 @@ export default function RootLayout({
         <header className="sticky top-0 left-0 w-full z-10 p-2 bg-gray-800">
           <Menu/>
         </header>
-
         <main className="flex-1 container mx-auto">
           {children}
         </main>

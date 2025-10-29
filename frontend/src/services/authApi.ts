@@ -1,7 +1,7 @@
 import {baseApi} from './api';
 import type {
   AuthRequest,
-  AuthResponse,
+  AuthResponse, UserStats,
 } from '@/types/auth'
 
 export const authApi = baseApi.injectEndpoints({
@@ -36,7 +36,14 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+
+    stats: builder.query<UserStats, number>({
+      query: (userId) => ({
+        url: `/stats/${userId}`,
+        method: 'GET',
+      }),
+    })
   }),
 });
 
-export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useCheckAuthQuery} = authApi;
+export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useCheckAuthQuery, useStatsQuery} = authApi;
