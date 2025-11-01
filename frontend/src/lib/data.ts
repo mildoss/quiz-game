@@ -1,6 +1,7 @@
 import pool from '@/lib/db';
 import { cache } from 'react';
 import {UserStats} from "@/types/user";
+import {Game} from "@/types/game";
 
 export const getUserStatsById = cache(async (userId: number) => {
   try {
@@ -14,3 +15,16 @@ export const getUserStatsById = cache(async (userId: number) => {
     return [];
   }
 });
+
+export const getRecentlyGamesById = cache(async (userId: number)=> {
+  try {
+    const {rows} = await pool.query<Game>(
+      'SELECT * FROM games WHERE user_info_id = $1 ORDER BY date DESC LIMIT 10',
+      [userId]
+    );
+    return rows;
+  } catch (error) {
+    console.error('Failed to fetch recently games:', error);
+    return [];
+  }
+})

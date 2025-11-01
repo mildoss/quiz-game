@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserStatsById } from "@/lib/data";
+import {getRecentlyGamesById, getUserStatsById} from "@/lib/data";
 
 export async function GET(
   request: NextRequest,
@@ -15,12 +15,17 @@ export async function GET(
 
   try {
     const stats = await getUserStatsById(id);
+    const recentlyGames = await getRecentlyGamesById(id);
 
     if (!stats) {
       return NextResponse.json({ error: "Stats not found" }, { status: 404 });
     }
 
-    return NextResponse.json(stats);
+    if (!recentlyGames) {
+      return NextResponse.json({ error: "Recently Games not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({stats, recentlyGames});
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

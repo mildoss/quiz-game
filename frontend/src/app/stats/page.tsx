@@ -7,6 +7,7 @@ import {selectAuthStatus, selectIsAuth, selectUserId} from "@/store/authSlice";
 import {useGetStatsQuery} from "@/services/statsApi";
 import {Spinner} from "@/components/ui/Spinner";
 import {useEffect} from "react";
+import {RecentGamesTable} from "@/components/RecentGamesTable";
 
 export default function StatsPage() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function StatsPage() {
   const id = useSelector(selectUserId);
   const userId = Number(id);
 
-  const {data: userStats, isLoading: isStatsLoading} = useGetStatsQuery(userId, {
+  const {data, isLoading: isStatsLoading} = useGetStatsQuery(userId, {
     skip: authStatus === 'loading' || !userId,
   });
 
@@ -28,15 +29,19 @@ export default function StatsPage() {
   if (authStatus === 'loading' || isStatsLoading) {
     return (
       <div className="flex justify-center items-center w-full min-h-[79vh]">
-        <Spinner />
+        <Spinner/>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="text-center text-2xl my-2 bg text-shadow-xs text-shadow-black">My stats</h1>
-      <StatsBlock userStats={userStats ? userStats : null}/>
+    <div className="flex flex-col gap-2">
+      <h1 className="text-center text-2xl mt-2 text-shadow-xs text-shadow-black">My stats</h1>
+      <StatsBlock userStats={data?.stats ?? null}/>
+      <h2 className="text-center text-lg mt-2 text-shadow-xs text-shadow-black">Recent games</h2>
+      <div className="px-4">
+        <RecentGamesTable games={data?.recentlyGames ?? null}/>
+      </div>
     </div>
   )
 }
