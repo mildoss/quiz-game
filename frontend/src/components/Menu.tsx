@@ -22,10 +22,10 @@ export const Menu = () => {
     <nav className="flex justify-between items-center">
       <div className="flex items-center gap-4">
         {isInActiveGame ? (
-          <Image src="/logo.png" width={64} height={64} alt="quiz"/>
+          <Image src="/logo.svg" width={64} height={64} alt="quiz"/>
         ) : (
           <Link href="/">
-            <Image className="cursor-pointer" src="/logo.png" width={64} height={64} alt="quiz"/>
+            <Image className="cursor-pointer" src="/logo.svg" width={64} height={64} alt="quiz"/>
           </Link>
         )}
       </div>

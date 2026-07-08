@@ -9,11 +9,11 @@ interface StatsBlockProps {
 export const StatsBlock = ({userStats}: StatsBlockProps) => {
   if (!userStats) return null;
 
-  const total = userStats.wins + userStats.losses;
+    const total = userStats.game_quantity;
 
-  const WR = total > 0
-    ? Math.floor((userStats.wins / total) * 100)
-    : 0;
+    const WR = total > 0
+        ? Math.round((userStats.wins / total) * 100)
+        : 0;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 place-items-center px-4">

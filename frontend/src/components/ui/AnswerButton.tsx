@@ -3,23 +3,23 @@ import {useGameSocket} from "@/providers/SocketProvider";
 export const ANSWER_THEMES = [
   {
     name: 'red',
-    icon: '🟥',
-    styles: "bg-gradient-to-br from-rose-500 to-red-600 shadow-rose-900/50 hover:shadow-rose-500/40 ring-rose-400"
+    icon: '',
+    styles: "bg-rose-600/25 border border-rose-500/50 hover:bg-rose-600/40 text-white hover:border-rose-400 shadow-[0_0_20px_rgba(225,29,72,0.15)]"
   },
   {
     name: 'blue',
-    icon: '🟦',
-    styles: "bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-900/50 hover:shadow-blue-500/40 ring-blue-400"
+    icon: '',
+    styles: "bg-blue-600/25 border border-blue-500/50 hover:bg-blue-600/40 text-white hover:border-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.15)]"
   },
   {
     name: 'yellow',
-    icon: '🟨',
-    styles: "bg-gradient-to-br from-amber-400 to-orange-500 shadow-orange-900/50 hover:shadow-orange-500/40 ring-amber-300"
+    icon: '',
+    styles: "bg-amber-600/25 border border-amber-500/50 hover:bg-amber-600/40 text-white hover:border-amber-400 shadow-[0_0_20px_rgba(217,119,6,0.15)]"
   },
   {
     name: 'green',
-    icon: '🟩',
-    styles: "bg-gradient-to-br from-emerald-400 to-green-600 shadow-green-900/50 hover:shadow-emerald-500/40 ring-emerald-300"
+    icon: '',
+    styles: "bg-emerald-600/25 border border-emerald-500/50 hover:bg-emerald-600/40 text-white hover:border-emerald-400 shadow-[0_0_20px_rgba(5,150,105,0.15)]"
   }
 ] as const;
 
@@ -35,24 +35,23 @@ interface AnswerButtonProps {
 }
 
 export const AnswerButton = ({theme, label, roomId, answerId, qId, disabled}: AnswerButtonProps) => {
-  const disabledStyle = "opacity-50 cursor-not-allowed grayscale scale-95";
+  const disabledStyle = "opacity-40 cursor-not-allowed grayscale";
   const {sendAnswer} = useGameSocket();
 
   return (
-    <button
-      onClick={() => !disabled && sendAnswer({qId, answerId, roomId})}
-      disabled={disabled}
-      className={`
-      relative group flex items-center justify-between p-6 sm:p-10 rounded-2xl 
-      text-white text-left shadow-lg transition-all duration-200 ease-out
-      hover:-translate-y-1 hover:brightness-110 active:translate-y-0 active:scale-95
-      focus:outline-none focus:ring-4 ring-offset-2 ring-offset-transparent
-      ${disabled ? disabledStyle : 'hover:-translate-y-1 hover:brightness-110 active:translate-y-0 active:scale-95'}
+      <button
+          onClick={() => !disabled && sendAnswer({qId, answerId, roomId})}
+          disabled={disabled}
+          className={`
+      relative group flex items-center justify-between p-6 sm:p-8 rounded-2xl 
+      text-left transition-all duration-300
+      hover:scale-[1.02] active:scale-[0.98]
+      focus:outline-none focus:ring-2 ring-white/20
+      ${disabled ? disabledStyle : ''}
       ${theme.styles}
     `}>
-      <span className="text-xl sm:text-2xl font-bold drop-shadow-md">{label}</span>
-      <span
-        className="text-3xl opacity-50 group-hover:opacity-100 group-hover:scale-125 transition-all">{theme.icon}</span>
-    </button>
+        <span className="text-lg sm:text-xl font-bold tracking-wide">{label}</span>
+        <span className="text-xl opacity-60 group-hover:opacity-100 transition-opacity">→</span>
+      </button>
   );
 };
