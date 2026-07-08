@@ -3,11 +3,12 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import { Client, StompSubscription } from '@stomp/stompjs';
 import { useDispatch, useSelector } from 'react-redux';
-import {selectToken, selectUserId} from '@/store/authSlice';
+import {selectToken, selectUserId, logout, setCredentials} from '@/store/authSlice';
 import {setRoomData, setIsSearching, clearGame, selectGameRoom} from '@/store/gameSlice';
 import {usePathname, useRouter} from "next/navigation";
 import {GameStatus, Player} from "@/types/game";
 import {gameApi} from "@/services/gameApi";
+import {authApi} from "@/services/authApi";
 import {AppDispatch} from "@/store/store";
 
 interface SocketContextType {
@@ -31,6 +32,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const WS_URL = process.env.NEXT_PUBLIC_WS_URL;
   const myId = useSelector(selectUserId);
   const isQuittingRef = useRef(false);
+  const isRefreshingTokenRef = useRef(false);
   const pathname = usePathname();
 
   const subscribeToRoomTopic = useCallback((client: Client, topic: string) => {
@@ -45,17 +47,32 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       const status = roomUpdate?.status;
 
       if (status === GameStatus.FINISHED) {
-        isQuittingRef.current = false;
+        if (roomSubscription.current) {
+          roomSubscription.current.unsubscribe();
+          roomSubscription.current = null;
+        }
+
+        if (isQuittingRef.current) {
+          // The game finished as a direct result of *this* client leaving
+          // (e.g. a technical win for the remaining player when there were
+          // only 2 players). The player who quit should be sent back home
+          // instead of seeing the match results screen.
+          isQuittingRef.current = false;
+
+          dispatch(clearGame());
+
+          dispatch(gameApi.util.updateQueryData('getActiveGame', undefined, (draft) => {
+            draft.status = 'NOT_IN_GAME';
+          }));
+
+          router.push('/');
+          return;
+        }
 
         if (update && !update.gameRoom) {
           dispatch(setRoomData({ gameRoom: update, gameRoomTopic: topic }));
         } else {
           dispatch(setRoomData(update));
-        }
-
-        if (roomSubscription.current) {
-          roomSubscription.current.unsubscribe();
-          roomSubscription.current = null;
         }
       } else {
         const myPlayer = roomUpdate?.players?.find((p: Player) => p.id === myId);
@@ -125,6 +142,37 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       dispatch(clearGame());
     };
 
+    client.onWebSocketClose = async () => {
+      setIsConnected(false);
+
+      // The handshake can be rejected because the token expired (see backend
+      // CustomHandshakeInterceptor). stomp.js will otherwise just keep retrying
+      // every `reconnectDelay` with this exact same (stale) token forever.
+      // Try refreshing the token once; if that fails, log the user out instead
+      // of hammering the backend indefinitely.
+      if (isRefreshingTokenRef.current) return;
+      isRefreshingTokenRef.current = true;
+
+      try {
+        const result = await dispatch(
+            authApi.endpoints.checkAuth.initiate(undefined, { forceRefetch: true })
+        ).unwrap();
+
+        dispatch(setCredentials({
+          token: result.token,
+          id: result.id,
+          username: result.username,
+        }));
+        // Updating the token in Redux changes this effect's dependency array,
+        // which tears down this client and spins up a fresh one with the new token.
+      } catch {
+        client.deactivate();
+        dispatch(logout());
+      } finally {
+        isRefreshingTokenRef.current = false;
+      }
+    };
+
     client.activate();
     stompClient.current = client;
 
@@ -158,8 +206,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (
-        room?.gameRoom?.status === GameStatus.ACTIVE ||
-        room?.gameRoom?.status === GameStatus.ROUND_FINISHED
+          room?.gameRoom?.status === GameStatus.ACTIVE ||
+          room?.gameRoom?.status === GameStatus.ROUND_FINISHED
       ) {
         return;
       }
@@ -194,9 +242,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   }, [pathname, room?.gameRoom?.status, room?.gameRoom?.id, leaveQueue]);
 
   return (
-    <SocketContext.Provider value={{ isConnected, findGame, reconnectInGame, leaveQueue, sendAnswer }}>
-      {children}
-    </SocketContext.Provider>
+      <SocketContext.Provider value={{ isConnected, findGame, reconnectInGame, leaveQueue, sendAnswer }}>
+        {children}
+      </SocketContext.Provider>
   );
 };
 
