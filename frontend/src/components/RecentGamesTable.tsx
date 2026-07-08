@@ -8,13 +8,15 @@ interface RecentlyGamesProps {
 export const RecentGamesTable = ({games}: RecentlyGamesProps) => {
   if (!games) return null;
 
-  if (games.length === 0) {
-    return (
-      <div className="text-center text-gray-500 py-4">
-        No recent games found.
-      </div>
-    );
-  }
+    if (games.length === 0) {
+        return (
+            <div className="flex items-center justify-center py-24">
+        <span className="text-xl sm:text-2xl font-black text-slate-400/80 uppercase tracking-[0.3em] select-none text-center">
+          No recent games found
+        </span>
+            </div>
+        );
+    }
 
   return (
     <div className="overflow-x-auto">
