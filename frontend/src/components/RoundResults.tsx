@@ -23,7 +23,7 @@ export const RoundResults = ({game}: {game: GameRoom}) => {
   return (
     <div className="w-full max-w-2xl mx-auto mt-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl">
       <h2 className="text-3xl font-black text-white text-center mb-6 drop-shadow-lg">
-        Results of Round #{game.currentQNum}
+        Results of the Round #{game.currentQNum}
       </h2>
 
       <Countdown targetDate={game.roundEndTime} currentTime={game.currentTime}/>
